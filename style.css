@@ -1,0 +1,106 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color #F8F8F8;
+  font-family: proxima-nova, sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  font-style: normal;
+}
+
+h4{
+  margin-top: 0px;
+  margin-bottom: 0;
+  margin-left: 10px;
+}
+
+.side-header {
+  height: 70px;
+  clear: both;
+  padding-right: 10px;
+}
+
+.side-header h1 {
+  font-size: 17px;
+  text-transform: uppercase;
+  margin: 20px;
+  letter-spacing: 0.03em;
+  margin-top: 25px;
+}
+
+#main {
+  background-color: #F8F8F8;
+}
+
+#main .content {
+  padding: 25px;
+}
+
+a.list-group-item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+a.list-group-item:hover {
+  cursor: pointer;
+  background-color: #5679FE !important;
+  color: white !important;
+  text-decoration: none;
+}
+
+.active-item {
+  background-color: #5679FE !important;
+}
+
+.form-control {
+  margin-bottom: 15px;
+}
+
+b {
+  display: block;
+  margin-bottom: 5px;
+}
+
+textarea {
+  min-height: 400px;
+}
+
+.action-button {
+  display: inline-block;
+  text-align: center;
+  padding: 7px;
+  width: 40px;
+  height: 40px;
+  margin-top: 12px;
+  margin-right: 10px;
+}
+
+.action-button:hover {
+  background-color: #5679FE;
+  cursor: pointer;
+}
+
+#navbar button{
+  width: 100px;
+}
+
+.cm-formatting {
+  color: #BBB !important;
+}
+
+select.form-control {
+  padding-right: 25px;
+  background-image: url("data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='14px' height='14px' viewBox='0 0 1200 1000' fill='rgb(51,51,51)'> <path d='M1100 411l-198 -199l-353 353l-353 -353l-197 199l551 551z'/> </svg>");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 15px) 50%;
+  -moz-appearance: none;
+  appearance: none;
+}

@@ -11,6 +11,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@ryangjchandler/spruce@1.1.0/dist/spruce.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.6.0/dist/alpine.min.js"></script>
+  <script src="//unpkg.com/navigo"></script>
 
   <link rel="stylesheet" href="https://use.typekit.net/snu8pnn.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
@@ -18,129 +19,29 @@
   <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css" />
   <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
 
-  <style>
-    html,
-    body {
-      height: 100%;
-    }
+  <link rel="stylesheet" href="style.css" />
 
-    body {
-      background-color #F8F8F8;
-      font-family: proxima-nova, sans-serif;
-      font-size: 17px;
-      font-weight: 400;
-      font-style: normal;
-    }
+  <!-- routes -->
+  <script src="routes.js"></script>
 
-    .side-header {
-      height: 70px;
-      clear: both;
-      padding-right: 10px;
-    }
-
-    .side-header h1 {
-      font-size: 17px;
-      text-transform: uppercase;
-      margin: 20px;
-      letter-spacing: 0.03em;
-      margin-top: 25px;
-    }
-
-    #main {
-      background-color: #F8F8F8;
-    }
-
-    #main .content {
-      padding: 25px;
-    }
-
-    a.list-group-item {
-      padding-top: 8px;
-      padding-bottom: 8px;
-      -moz-user-select: none;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      -o-user-select: none;
-      user-select: none;
-    }
-
-    a.list-group-item:hover {
-      cursor: pointer;
-      background-color: #5679FE !important;
-      color: white !important;
-    }
-
-    .active-item {
-      background-color: #5679FE !important;
-    }
-
-    .form-control {
-      margin-bottom: 15px;
-    }
-
-    b {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    textarea {
-      min-height: 400px;
-    }
-
-    .action-button {
-      display: inline-block;
-      text-align: center;
-      padding: 7px;
-      width: 40px;
-      height: 40px;
-      margin-top: 12px;
-      margin-right: 10px;
-    }
-
-    .action-button:hover {
-      background-color: #5679FE;
-      cursor: pointer;
-    }
-
-    #save {
-      width: 100px;
-    }
-
-
-    .cm-formatting {
-      color: #BBB !important;
-    }
-
-    select.form-control {
-      padding-right: 25px;
-      background-image: url("data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='14px' height='14px' viewBox='0 0 1200 1000' fill='rgb(51,51,51)'> <path d='M1100 411l-198 -199l-353 353l-353 -353l-197 199l551 551z'/> </svg>");
-      background-repeat: no-repeat;
-      background-position: calc(100% - 15px) 50%;
-      -moz-appearance: none;
-      appearance: none;
-    }
-  </style>
 </head>
 
 <body>
 
-  <div class="h-100" x-data="app()" x-init="init()">
+  <div class="h-100" x-data="app()">
 
     <div class="row no-gutters h-100">
       <div class="col-md-3 border-right bg-dark text-light" id="side">
 
         <div class="side-header">
-          <h1 class="float-left">Entries</h1>
-          <span @click="add" class="action-button float-right"><i class="fas fa-plus"></i></span>
+          <h1 class="float-left">Categories</h1>
+          <span @click="addCat" class="action-button float-right"><i class="fas fa-plus"></i></span>
         </div>
 
-        <template x-if="$store.data.entries.length">
+        <template x-if="$store.data.categories.length">
           <div class="list-group list-group-flush">
-            <template x-for="(entry, index) in $store.data.entries">
-
-              <a @click="setCur(index)" x-bind:class="{ 'active-item': $store.app.curItem === index.toString() }" class="list-group-item list-group-item-action bg-dark text-light d-inline-block text-truncate"
-                x-text="entry.title ? entry.title : 'Untitled'"></a>
-
+            <template x-for="(cat, index) in $store.data.categories">
+              <a :href="'#/category/'+cat.id" data-navigo class="list-group-item list-group-item-action bg-dark text-light d-inline-block text-truncate" x-text="cat.title ? cat.title : 'Untitled'"></a>
             </template>
           </div>
         </template>
@@ -148,104 +49,132 @@
       </div>
       <div class="col-md-9" id="main">
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom p-3">
-          <button @click="save" class="btn btn-dark ml-auto" id="save">Save</button>
-        </nav>
-
-        <div class="content">
-          <template x-if="$store.app.curItem">
-            <div>
-
-              <div class="row">
-                <div class="col-md-9">
-
-                  <b>Title</b>
-                  <input x-model="$store.data.entries[$store.app.curItem].title" class="form-control">
-                </div>
-                <div class="col-md-3">
-                  <b>Category</b>
-                  <select class="form-control" x-model="$store.data.entries[$store.app.curItem].category">
-                    <template x-for="cat in $store.data.categories">
-                      <option :value="cat.slug" x-text="cat.title"></option>
-                    </template>
-                  </select>
-                </div>
-              </div>
-
-              <b>Body</b>
-              <textarea id="markdown-editor" x-model="$store.data.entries[$store.app.curItem].body" class="form-control"></textarea>
-
-            </div>
-          </template>
-        </div>
+        <!-- Routes -->
 
       </div>
     </div>
+  </div>
 
-    <script>
-      Spruce.store('data', {
-        entries: [{
-          title: "Lorem ipsum",
-          body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-          category: "default"
-        }, {
-          title: "Bibendum vitae sed",
-          body: "Aliquam vel lectus eu sapien efficitur imperdiet id at ante.",
-          category: "about"
-        }, {
-          title: "Tincidunt vestibulum",
-          body: "Praesent tincidunt posuere vestibulum. Morbi ac diam vitae dui accumsan aliquam.",
-          category: "default"
-        }],
-        categories: [{
-          title: "Default",
-          slug: "default",
-          fields: ""
-        }, {
-          title: "About",
-          slug: "about",
-          fields: ""
-        }],
-      })
-      Spruce.store('app', {
-        curItem: '0' // string, else it doesn't work
-      })
+  <script>
+    Spruce.store('data', {
+      entries: [{
+        id: "1",
+        title: "Lorem ipsum",
+        body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        cat_id: "1"
+      }, {
+        id: "2",
+        title: "Bibendum vitae sed",
+        body: "Aliquam vel lectus eu sapien efficitur imperdiet id at ante.",
+        cat_id: "2"
+      }, {
+        id: "3",
+        title: "Tincidunt vestibulum",
+        body: "Praesent tincidunt posuere vestibulum. Morbi ac diam vitae dui accumsan aliquam.",
+        cat_id: "1"
+      }],
+      categories: [{
+        id: "1",
+        title: "Default",
+        slug: "default",
+        fields: ""
+      }, {
+        id: "2",
+        title: "About",
+        slug: "about",
+        fields: ""
+      }],
+    })
+    Spruce.store('app', {
+      curEntry: '0', // string, else it doesn't work
+      curCat: '0',
+      curPage: 'dashboard'
+    })
 
-      function app() {
-        return {
-          init() {
-            setTimeout(function() {
-              window.easyMDE = new EasyMDE({
-                element: document.getElementById('markdown-editor'),
-                spellChecker: false,
-                uploadImage: true
-              });
-            }, 10);
-          },
-          setCur(index) {
-            this.$store.app.curItem = index.toString();
+    // for use outside of Alpine
+    const dataStore = Spruce.store('data');
+    const appStore = Spruce.store('app');
 
-            var myapp = this;
-            window.easyMDE.value(myapp.$store.data.entries[myapp.$store.app.curItem].body);
-            window.easyMDE.codemirror.on("change", function() {
-              myapp.$store.data.entries[myapp.$store.app.curItem].body = window.easyMDE.value();
+    function app() {
+      return {
+        addEntry(cat_id) {
+          this.$store.data.entries.unshift({
+            id: Date.now(),
+            title: "",
+            body: "",
+            cat_id: cat_id
+          });
+          this.$store.app.curEntry = '0';
+
+        },
+        addCat() {
+          var category = prompt("Enter a name for the category", "");
+
+          if (category != null) {
+
+            this.$store.data.categories.push({
+              id: Date.now(),
+              title: category
             });
 
-          },
-          add() {
-            this.$store.data.entries.unshift({
-              title: "",
-              body: ""
-            });
-            this.$store.app.curItem = '0';
-          },
-          save() {
-            console.log('ok');
-            alert(JSON.stringify(this.$store.data));
           }
+        },
+        save() {
+          console.log('ok');
+          alert(JSON.stringify(this.$store.data));
         }
       }
-    </script>
+    }
+
+    const router = new Navigo('/', {
+      hash: true
+    });
+
+    router.on('/', function() {
+      appStore.curPage = 'dashboard';
+
+      var data = {};
+      var route = new Routes(data);
+      document.getElementById('main').innerHTML = route.dashboard();
+
+    });
+    router.on('/category/:id', function({
+      data
+    }) {
+
+      appStore.curPage = 'category';
+      appStore.curCat = dataStore.categories.findIndex(x => x.id == data.id).toString();
+
+      var route = new Routes(data);
+      document.getElementById('main').innerHTML = route.category();
+
+    });
+    router.on('/entry/:id', function({
+      data
+    }) {
+
+      appStore.curPage = 'entry';
+      appStore.curEntry = dataStore.entries.findIndex(x => x.id == data.id).toString();
+
+      var route = new Routes(data);
+      document.getElementById('main').innerHTML = route.entry();
+
+      setTimeout(function() {
+        window.easyMDE = new EasyMDE({
+          element: document.getElementById('markdown-editor'),
+          spellChecker: false,
+        });
+
+        window.easyMDE.codemirror.on("change", function() {
+          dataStore.entries[appStore.curEntry].body = window.easyMDE.value();
+        });
+
+      }, 5);
+
+
+    });
+    router.resolve();
+  </script>
 
 </body>
 
