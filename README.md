@@ -1,5 +1,5 @@
 # alpinejs-headless-blog-system
-A single-page blog system written in Alpine.js
+A simple single-page blog system written in Alpine.js
 
 ## Demo
 https://alpinejs-headless-blog-system.vercel.app/
