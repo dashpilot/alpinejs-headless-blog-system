@@ -51,13 +51,13 @@ a.list-group-item {
 
 a.list-group-item:hover {
   cursor: pointer;
-  background-color: black !important;
+  background-color: #5679FE !important;
   color: white !important;
   text-decoration: none;
 }
 
-.current-item {
-  background-color: black !important;
+.bg-dark.current-item {
+  background-color: #5679FE !important;
 }
 
 
