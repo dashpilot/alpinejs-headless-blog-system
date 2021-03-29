@@ -56,9 +56,10 @@ a.list-group-item:hover {
   text-decoration: none;
 }
 
-.active-item {
-  background-color: #5679FE !important;
+.bg-dark.current-item {
+  background-color: black !important;
 }
+
 
 .form-control {
   margin-bottom: 15px;

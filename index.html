@@ -37,7 +37,8 @@
         <template x-if="$store.data.categories.length">
           <div class="list-group list-group-flush">
             <template x-for="(cat, index) in $store.data.categories">
-              <a :href="'/#/category/'+cat.id" data-navigo class="list-group-item list-group-item-action bg-dark text-light d-inline-block text-truncate" x-text="cat.title ? cat.title : 'Untitled'"></a>
+              <a :href="'/#/category/'+cat.id" data-navigo :class="{ 'current-item': $store.app.curCat == cat.id }" class="list-group-item list-group-item-action bg-dark text-light d-inline-block text-truncate"
+                x-text="cat.title ? cat.title : 'Untitled'"></a>
             </template>
           </div>
         </template>
@@ -157,7 +158,8 @@
     Spruce.store('app', {
       page: '',
       id: location.hash.split('/')[2],
-      curEntry: 0
+      curEntry: 0, // index
+      curCat: 0, // id
     })
 
     function app() {
@@ -196,6 +198,9 @@
               Spruce.store('data').entries[Spruce.store('app').curEntry].body = window.easyMDE.value();
             });
 
+
+          } else {
+            Spruce.store('app').curCat = myid;
           }
 
         },
