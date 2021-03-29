@@ -11,7 +11,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@ryangjchandler/spruce@1.1.0/dist/spruce.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.6.0/dist/alpine.min.js"></script>
-  <script src="//unpkg.com/navigo"></script>
 
   <link rel="stylesheet" href="https://use.typekit.net/snu8pnn.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
@@ -21,14 +20,11 @@
 
   <link rel="stylesheet" href="style.css" />
 
-  <!-- routes -->
-  <script src="routes.js"></script>
-
 </head>
 
 <body>
 
-  <div class="h-100" x-data="app()">
+  <div class="h-100" x-data="app()" x-init="init()" @hashchange.window="setPage()">
 
     <div class="row no-gutters h-100">
       <div class="col-md-3 border-right bg-dark text-light" id="side">
@@ -41,7 +37,7 @@
         <template x-if="$store.data.categories.length">
           <div class="list-group list-group-flush">
             <template x-for="(cat, index) in $store.data.categories">
-              <a :href="'#/category/'+cat.id" data-navigo class="list-group-item list-group-item-action bg-dark text-light d-inline-block text-truncate" x-text="cat.title ? cat.title : 'Untitled'"></a>
+              <a :href="'/#/category/'+cat.id" data-navigo class="list-group-item list-group-item-action bg-dark text-light d-inline-block text-truncate" x-text="cat.title ? cat.title : 'Untitled'"></a>
             </template>
           </div>
         </template>
@@ -49,7 +45,80 @@
       </div>
       <div class="col-md-9" id="main">
 
-        <!-- Routes -->
+
+        <div x-show="$store.app.page == ''">
+
+          <div>
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom p-3" id="navbar">
+              <h4 class="mr-auto">Dashboard</h4>
+            </nav>
+
+            <div class="content">Choose a category on the left</div>
+          </div>
+
+        </div>
+
+        <div x-show="$store.app.page == 'category'">
+
+          <div>
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom p-3" id="navbar">
+              <h4 class="mr-auto">Category</h4>
+              <button @click="addEntry(${this.data.id})" class="btn btn-dark ml-auto">Add</button>
+            </nav>
+
+            <div class="content">
+              <div class="list-group">
+                <template x-for="entry in $store.data.entries.filter(x => x.cat_id == $store.app.id)">
+                  <a :href="'/#/entry/'+entry.id" data-navigo class="list-group-item d-inline-block text-truncate" x-text="entry.title ? entry.title : 'Untitled'"></a>
+                </template>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div x-show="$store.app.page == 'entry'">
+
+          <div>
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom p-3" id="navbar">
+              <h4 class="mr-auto">Entry</h4>
+              <button @click="save" class="btn btn-dark ml-auto" id="save">Save</button>
+            </nav>
+
+            <div class="content">
+              <template x-for="entry in $store.data.entries.filter(x => x.id == $store.app.id)">
+                <div>
+
+                  <div class="row">
+                    <div class="col-md-9">
+
+                      <b>Title</b>
+                      <input x-model="entry.title" class="form-control">
+                    </div>
+
+                    <div class="col-md-3">
+                      <b>Category</b>
+
+                      <select class="form-control" x-model="entry.cat_id">
+                        <template x-for="cat in $store.data.categories">
+                          <option :value="cat.id" x-text="cat.title" :selected="entry.cat_id == cat.id"></option>
+                        </template>
+                      </select>
+
+                    </div>
+                  </div>
+
+                  <b>Body</b>
+                  <textarea id="markdown-editor" x-model="entry.body" class="form-control"></textarea>
+
+                </div>
+              </template>
+            </div>
+          </div>
+
+        </div>
+
+
 
       </div>
     </div>
@@ -65,12 +134,12 @@
       }, {
         id: "2",
         title: "Bibendum vitae sed",
-        body: "Aliquam vel lectus eu sapien efficitur imperdiet id at ante.",
+        body: "Bibendum vitae sed eu sapien efficitur imperdiet id at ante.",
         cat_id: "2"
       }, {
         id: "3",
         title: "Tincidunt vestibulum",
-        body: "Praesent tincidunt posuere vestibulum. Morbi ac diam vitae dui accumsan aliquam.",
+        body: "Tincidunt vestibulum posuere vestibulum. Morbi ac diam vitae dui accumsan aliquam.",
         cat_id: "1"
       }],
       categories: [{
@@ -86,17 +155,50 @@
       }],
     })
     Spruce.store('app', {
-      curEntry: '0', // string, else it doesn't work
-      curCat: '0',
-      curPage: 'dashboard'
+      page: '',
+      id: location.hash.split('/')[2],
+      curEntry: 0
     })
-
-    // for use outside of Alpine
-    const dataStore = Spruce.store('data');
-    const appStore = Spruce.store('app');
 
     function app() {
       return {
+        init() {
+          console.log('init');
+
+          setTimeout(function() {
+            window.easyMDE = new EasyMDE({
+              element: document.getElementById('markdown-editor'),
+              spellChecker: false,
+            });
+          }, 5);
+
+        },
+        setPage() {
+          let mypage = location.hash.split('/')[1];
+          let myid = location.hash.split('/')[2];
+
+          this.$store.app.page = mypage;
+          this.$store.app.id = myid;
+
+          if (mypage == 'entry') {
+
+            let entry = Spruce.store('data').entries.filter(x => x.id == myid)[0];
+
+            console.log('id: ' + entry.id);
+
+            let index = Spruce.store('data').entries.findIndex(x => x.id == myid);
+            Spruce.store('app').curEntry = index;
+
+            window.easyMDE.value(entry.body);
+
+            window.easyMDE.codemirror.on("blur", function() {
+              console.log('blur');
+              Spruce.store('data').entries[Spruce.store('app').curEntry].body = window.easyMDE.value();
+            });
+
+          }
+
+        },
         addEntry(cat_id) {
           this.$store.data.entries.unshift({
             id: Date.now(),
@@ -104,19 +206,14 @@
             body: "",
             cat_id: cat_id
           });
-          this.$store.app.curEntry = '0';
-
         },
         addCat() {
           var category = prompt("Enter a name for the category", "");
-
           if (category != null) {
-
             this.$store.data.categories.push({
               id: Date.now(),
               title: category
             });
-
           }
         },
         save() {
@@ -125,55 +222,6 @@
         }
       }
     }
-
-    const router = new Navigo('/', {
-      hash: true
-    });
-
-    router.on('/', function() {
-      appStore.curPage = 'dashboard';
-
-      var data = {};
-      var route = new Routes(data);
-      document.getElementById('main').innerHTML = route.dashboard();
-
-    });
-    router.on('/category/:id', function({
-      data
-    }) {
-
-      appStore.curPage = 'category';
-      appStore.curCat = dataStore.categories.findIndex(x => x.id == data.id).toString();
-
-      var route = new Routes(data);
-      document.getElementById('main').innerHTML = route.category();
-
-    });
-    router.on('/entry/:id', function({
-      data
-    }) {
-
-      appStore.curPage = 'entry';
-      appStore.curEntry = dataStore.entries.findIndex(x => x.id == data.id).toString();
-
-      var route = new Routes(data);
-      document.getElementById('main').innerHTML = route.entry();
-
-      setTimeout(function() {
-        window.easyMDE = new EasyMDE({
-          element: document.getElementById('markdown-editor'),
-          spellChecker: false,
-        });
-
-        window.easyMDE.codemirror.on("change", function() {
-          dataStore.entries[appStore.curEntry].body = window.easyMDE.value();
-        });
-
-      }, 5);
-
-
-    });
-    router.resolve();
   </script>
 
 </body>
