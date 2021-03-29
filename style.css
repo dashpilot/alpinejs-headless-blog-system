@@ -104,3 +104,8 @@ select.form-control {
   -moz-appearance: none;
   appearance: none;
 }
+
+.color-gray{
+  color: gray;
+  cursor: pointer;
+}
