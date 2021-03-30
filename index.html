@@ -192,18 +192,20 @@
 
           var app = this;
 
+          /*
+          if (window.location.hash) {
+            app.setPage();
+          }
+          */
+
           setTimeout(function() {
+
             window.easyMDE = new EasyMDE({
               element: document.getElementById('markdown-editor'),
               spellChecker: false,
             });
 
-            if (window.location.hash) {
-              app.setPage();
-            }
-
-
-          }, 50);
+          }, 20);
 
         },
         setPage() {
