@@ -18,7 +18,7 @@ h4{
 }
 
 .side-header {
-  height: 70px;
+  height: 47px;
   clear: both;
   padding-right: 10px;
 }
@@ -80,12 +80,16 @@ textarea {
   width: 40px;
   height: 40px;
   margin-top: 11px;
-  margin-right: 10px;
+
 }
 
 .action-button:hover {
   background-color: #5679FE;
   cursor: pointer;
+}
+
+#navbar{
+  min-height: 72px;
 }
 
 #navbar button{
@@ -108,4 +112,10 @@ select.form-control {
 .color-gray{
   color: gray;
   cursor: pointer;
+}
+
+#side-footer{
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
 }
